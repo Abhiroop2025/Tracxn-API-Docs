@@ -1,0 +1,137 @@
+openapi: 3.0.3
+info:
+  title: Funding Round API - Mool.ai
+  description: |
+    API to query funding round data from Tracxn's transaction database.
+
+    **Note:** Data limited to the last 2 years.
+  version: "1.0.0"
+servers:
+  - url: https://platform.tracxn.com/api/3.0
+paths:
+  /fundingrounds:
+    post:
+      summary: Query funding rounds
+      description: Retrieve funding round data using company or funding round IDs.
+      tags:
+        - Funding Rounds
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                filter:
+                  type: object
+                  properties:
+                    companiesId:
+                      type: array
+                      items:
+                        type: string
+                      example: ["52bd669ce4b0ac0615891070"]
+                    fundingRoundId:
+                      type: array
+                      items:
+                        type: string
+                      example: ["55b7484ae4b0d84ec4a809d7"]
+      responses:
+        "200":
+          description: Successful response with funding round data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FundingRoundResponse"
+      security:
+        - accessToken: []
+
+components:
+  securitySchemes:
+    accessToken:
+      type: apiKey
+      in: header
+      name: accessToken
+
+  schemas:
+    FundingRoundResponse:
+      type: object
+      properties:
+        id: { type: string }
+        name: { type: string }
+        companies:
+          type: array
+          items:
+            type: object
+            properties:
+              id: { type: string }
+        date:
+          type: object
+          properties:
+            year: { type: integer }
+            month: { type: integer }
+            day: { type: integer }
+        currency: { type: string }
+        isAmountUndisclosed: { type: string }
+        amount:
+          type: object
+          properties:
+            EUR: { type: object, properties: { value: { type: number } } }
+            GBP: { type: object, properties: { value: { type: number } } }
+            SGD: { type: object, properties: { value: { type: number } } }
+            USD: { type: object, properties: { value: { type: number } } }
+            INR: { type: object, properties: { value: { type: number } } }
+        isKeyFundingRound: { type: boolean }
+        investorList:
+          type: array
+          items:
+            type: object
+            properties:
+              id: { type: string }
+              type: { type: string }
+              isFirstInvestment: { type: boolean }
+              isLead: { type: boolean }
+              domain: { type: string }
+              investorType: { type: string }
+        facilitatorsList:
+          type: array
+          items:
+            type: object
+            properties:
+              id: { type: string }
+              type: { type: string }
+              investorType: { type: string }
+              domain: { type: string }
+              isLead: { type: boolean }
+        revenueMultiple: { type: number }
+        valuation: { $ref: "#/components/schemas/ValuationBlock" }
+        preMoneyValuation: { $ref: "#/components/schemas/ValuationBlock" }
+        ttmRevenue: { $ref: "#/components/schemas/ValuationBlock" }
+        createdDate:
+          type: object
+          properties:
+            year: { type: integer }
+            month: { type: integer }
+            day: { type: integer }
+            hours: { type: integer }
+            minutes: { type: integer }
+            seconds: { type: integer }
+
+    ValuationBlock:
+      type: object
+      properties:
+        baseCurrency: { type: string }
+        amount:
+          type: object
+          properties:
+            EUR: { $ref: "#/components/schemas/CurrencyDetail" }
+            GBP: { $ref: "#/components/schemas/CurrencyDetail" }
+            SGD: { $ref: "#/components/schemas/CurrencyDetail" }
+            USD: { $ref: "#/components/schemas/CurrencyDetail" }
+            INR: { $ref: "#/components/schemas/CurrencyDetail" }
+
+    CurrencyDetail:
+      type: object
+      properties:
+        value: { type: number }
+        min: { type: number }
+        max: { type: number }
