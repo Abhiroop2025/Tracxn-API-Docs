@@ -1,10 +1,8 @@
 openapi: 3.0.3
 info:
-  title: Funding Round API - Mool.ai
+  title: Funding Round API
   description: |
     API to query funding round data from Tracxn's transaction database.
-
-    **Note:** Data limited to the last 2 years.
   version: "1.0.0"
 servers:
   - url: https://platform.tracxn.com/api/3.0
